@@ -185,13 +185,28 @@ function mount(): void {
 
   /** Open the form for a freshly issued nonce. The nonce travels in the fragment, never the query. */
   function showPanel(nonce: string): void {
+    // Deliberately set NO attribute policy on this frame: no `allow`, no `sandbox`. It is a credential
+    // surface, so both omissions are load-bearing, and both are silent failures if someone "helpfully"
+    // adds one. Concretely, do not add either of these lines:
+    //
+    //   iframe.setAttribute('allow', '')                  ← delegated to `allow="*"`; see below
+    //   iframe.setAttribute('sandbox', 'allow-scripts')   ← opaque origin; chrome.runtime unavailable
+    //
+    // - No `allow`: a frame with no [allow] runs under an *empty* Permissions Policy, which is what
+    //   keeps the host page out of it — a permissive policy leaves `attachShadow` reachable from the
+    //   parent, letting the page call `attachShadow({mode:'open'})` on the closed root's host and read
+    //   the prefilled password from the frame's same-origin `contentDocument`. `iframe.setAttribute(
+    //   'allow', '')` is NOT the way to express "delegate nothing": Chrome reads an empty attribute as
+    //   `allow="*"` and delegates *every* feature, which is exactly the state to avoid. Never set the
+    //   attribute at all; if it ever has to be cleared, use `removeAttribute`.
+    // - No `sandbox`: "sandboxed" here means `iframe.setAttribute('sandbox', …)` (or `sandbox=""` in
+    //   markup), which Chrome applies by treating the frame as if it came from a unique, opaque origin.
+    //   The form then issues `chrome.runtime.sendMessage` from an origin the extension does not own, so
+    //   the message never reaches the service worker and every open fails. The frame stays unsandboxed
+    //   on purpose: it is this same extension's origin, and that is what makes `chrome.runtime` work.
     const iframe = document.createElement('iframe');
     // `#` fragment: same-document, never sent to a server, and scrubbed by the form on load.
     iframe.src = `${chrome.runtime.getURL('form.html')}#${nonce}`;
-    // `allow=""`: no permission policy is delegated (no camera, geolocation, ...).
-    // No `sandbox` attribute on purpose — an extension-origin document needs direct `chrome.runtime`
-    // access, and a sandboxed frame would get an opaque origin and lose it.
-    iframe.setAttribute('allow', '');
     iframe.title = 'Credentials form';
 
     panel.replaceChildren(iframe);
