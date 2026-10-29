@@ -1,0 +1,17 @@
+{
+  "name": "credentials",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Credentials — per-origin credential mock, Manifest V3 extension (synthetic data only).",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.3.7",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}

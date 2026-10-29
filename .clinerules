@@ -1,0 +1,30 @@
+### General Rules
+
+- Don't try to build the client/server after changes.
+- When adding time durations don't add a space between the number and unit (i.e. 12h, NOT 12 h).
+
+### CRITICAL: TERMINAL & FILE CONSTRAINTS
+
+- NEVER use terminal commands (such as cat, grep, find, type, or powershell) to view, search, or read file contents. Always use the native `read_file` tool or native codebase search tools.
+- NEVER execute interactive terminal commands. Always append non-interactive, auto-approve, or silent flags (e.g., `-y`, `--yes`, `--force`, or `CI=true`) to completely bypass prompts.
+- NEVER open, look at, read, or process "TODO.txt" or "terraform.tfvars". Treat these files as strictly forbidden and closed context.
+- NEVER open, look at, read, or process any ".env" files (e.g., .env, .env.local, .env.development) EXCEPT for ".env.example". If you need to understand required configuration variables, read ".env.example" exclusively.
+
+### Token Management Rules
+
+- Never use search_files or grep across the entire codebase unless explicitly asked.
+- For files longer than 150 lines, NEVER call `read_file` blindly. You MUST first use the native `search_files` tool with a specific regex or keyword to locate the exact function, class, or code block needed. Only read the file after confirming its relevant contents.
+- When creating multiple files, always update the primary entry point (e.g. App.jsx) progressively rather than waiting until the end.
+- If a file read loop takes more than 3 turns, stop and ask the user for direct file paths.
+- Never ask to access the internet to view documentation. Instead, ask whatever question you need answered and wait for the user to provide one.
+
+### File-First Protocol & Editing Constraints
+
+- **Efficient Grouped Edits:** Group all related changes within the same file into a single tool execution block. Do not split sequential or multi-line edits into separate back-to-back tool calls. Aim to get all edits for a single file approved in a single turn to minimize token context overhead.
+- **Surgical Block Replacement vs Full Rewrites:** Do not rewrite entire files or large, unaffected multi-function blocks (>50 lines) just to make minor edits. Use concise SEARCH/REPLACE blocks targeted strictly at the functions or blocks being modified. **EXCEPTION:** For file-wide refactors, global formatting, or sweeping casing adjustments, bypass SEARCH/REPLACE entirely and use `write_to_file` to overwrite the file cleanly in a single turn to prevent character-limit tool splitting.
+- **Handle Match Errors Cleanly:** If a search-and-replace block fails due to a whitespace or string match error, do not panic or loop. Immediately run `read_file` to capture exact indentation, then retry a smaller, exact match block.
+- **Unrestricted New File Creation:** When creating a brand-new file, always write the entire file cleanly in a single `write_to_file` execution. Do not create an empty/short template and then apply multiple subsequent `replace_in_file` patches to fill it out. The 50-line surgical block constraint applies strictly to existing codebases, not new files.
+- Prioritize writing complete code files using file-writing tools only for _new_ files or very small files.
+- Verify your own code changes using the `read_file` tool to parse logic, syntax correctness, and structural parity across modules.
+- DO NOT run iterative diagnostic terminal test scripts, npm watch scripts, or interactive validation loops.
+- When a coding task or component step is complete, explicitly pause and prompt the user to manually run the validation commands (e.g., npm test, npm run build) in their host terminal. Rely on the user's manual terminal output feedback to proceed.

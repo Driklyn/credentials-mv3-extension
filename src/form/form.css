@@ -1,0 +1,146 @@
+/*
+ * Form styling — self-contained by policy: no `@import`, no web fonts, no external URLs.
+ *
+ * The document is loaded inside a 340x220 iframe, so the whole surface is a 2-row grid that never
+ * scrolls: a header, the fields, the submit row, and a status line pinned to the bottom.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  color: #1f2933;
+  font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px 8px;
+  gap: 8px;
+}
+
+.site {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e4e7eb;
+  flex: 0 0 auto;
+}
+
+.site__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7b8794;
+}
+
+.site__origin {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: #323f4b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #52606d;
+}
+
+input {
+  font: inherit;
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid #cbd2d9;
+  border-radius: 5px;
+  background: #ffffff;
+  color: inherit;
+}
+
+input:focus {
+  outline: 2px solid #2f80ed;
+  outline-offset: 1px;
+  border-color: #2f80ed;
+}
+
+input:disabled {
+  background: #f5f7fa;
+  color: #9aa5b1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 5px;
+  border: 1px solid #1f2933;
+  background: #1f2933;
+  color: #ffffff;
+}
+
+button:hover:not(:disabled) {
+  background: #323f4b;
+}
+
+button:disabled {
+  background: #9aa5b1;
+  border-color: #9aa5b1;
+  cursor: default;
+}
+
+.status {
+  margin: 0;
+  flex: 0 0 auto;
+  min-height: 14px;
+  font-size: 11px;
+  color: #52606d;
+}
+
+.status[data-tone='ok'] {
+  color: #177245;
+}
+
+.status[data-tone='error'] {
+  color: #a4161a;
+}
+
+/* Once the session is dead the form stays visible but inert, with no way to re-arm it in place. */
+body[data-expired='true'] form {
+  opacity: 0.6;
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      Mirrors the manifest's `extension_pages` policy. The meta tag does not *replace* that policy; it
+      documents it at the point of use and blocks inline scripts/event handlers in the document itself.
+      No `connect-src` is granted: this page never opens a network connection.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credentials</title>
+    <link rel="stylesheet" href="./form.css" />
+    <script type="module" src="./form.ts"></script>
+  </head>
+  <body>
+    <!-- Read-only provenance line: the origin the service worker bound this session to. -->
+    <div class="site">
+      <span class="site__label">Site</span>
+      <span class="site__origin" id="site">…</span>
+    </div>
+
+    <form id="credential-form" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="off"
+          disabled
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="off" disabled />
+      </div>
+
+      <div class="actions">
+        <button id="submit" type="submit" disabled>Save</button>
+      </div>
+    </form>
+
+    <!-- Announced politely: the status never steals focus from the fields being typed into. -->
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </body>
+</html>
